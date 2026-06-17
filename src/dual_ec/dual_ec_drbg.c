@@ -2,8 +2,7 @@
 #include <assert.h>
 #include <string.h>
 
-DualECDRBG
-DualECDRBG_new(Curve *curve, Point P, Point Q, u256 seed)
+DualECDRBG DualECDRBG_new(Curve *curve, Point P, Point Q, u256 seed)
 {
     assert(Point_on_curve(curve, P));
     assert(Point_on_curve(curve, Q));
@@ -19,8 +18,7 @@ DualECDRBG_new(Curve *curve, Point P, Point Q, u256 seed)
     return state;
 }
 
-DECDRBG_RESULT
-DualECDRBG_next(DualECDRBG *state, u256 *out_bits)
+DECDRBG_RESULT DualECDRBG_next(DualECDRBG *state, u256 *out_bits)
 {
     assert(state->s != 0);
     Point sP;

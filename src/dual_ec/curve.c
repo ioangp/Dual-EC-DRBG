@@ -18,8 +18,7 @@ u256 mod_sub(u256 a, u256 b, u256 p)
     return (a >= b) ? (a - b) : (p - (b - a));
 }
 
-inline u256
-mod_mul(u256 a, u256 b, u256 p)
+inline u256 mod_mul(u256 a, u256 b, u256 p)
 {
     return (u256)((u512)a * b % p);
 }
@@ -71,10 +70,10 @@ Point Point_add(Curve *curve, Point a, Point b)
 
     if (a.x == b.x) {
         if (a.y == b.y)
-            return Point_double(curve, a); // P + P = 2P
+            return Point_double(curve, a); /* P + P = 2P */
         else {
             Point inf = { .identity = 1 };
-            return inf; // P + (-P) = O
+            return inf; /* P + (-P) = O */
         }
     }
 

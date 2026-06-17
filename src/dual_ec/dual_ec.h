@@ -26,7 +26,7 @@ typedef struct Curve {
     u256 p; /* Field prime */
     u256 a; /* a coefficient */
     u256 b; /* b coefficient */
-    u256 n;
+    u256 n; /* Curve order */
 } Curve;
 
 typedef struct Point {
