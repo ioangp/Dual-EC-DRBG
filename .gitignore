@@ -1,4 +1,5 @@
 .notes/
 .vscode/
+.clang-format
 exploit.exe
 rng.exe

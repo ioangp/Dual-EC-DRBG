@@ -1,7 +1,8 @@
-#include <stdio.h>
 #include "dual_ec.h"
+#include <stdio.h>
 
-u256 u256_from_hex(const char *s) {
+u256 u256_from_hex(const char *s)
+{
     u256 x = 0;
 
     /* optional 0x prefix */
@@ -28,7 +29,8 @@ u256 u256_from_hex(const char *s) {
     return x;
 }
 
-void print_hex_u256(u256 x) {
+void print_hex_u256(u256 x)
+{
     for (int i = 252; i >= 0; i -= 4) {
         unsigned digit = (x >> i) & 0xF;
         putchar("0123456789abcdef"[digit]);

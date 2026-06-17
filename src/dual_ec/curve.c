@@ -1,39 +1,50 @@
-#include <stdio.h>
 #include "dual_ec.h"
+#include <stdio.h>
 
-u256 mod_add(u256 a, u256 b, u256 p) {
-    a %= p; b %= p;
+u256 mod_add(u256 a, u256 b, u256 p)
+{
+    a %= p;
+    b %= p;
     u256 r = a + b;
-    if (r >= p || r < a) r -= p;
+    if (r >= p || r < a)
+        r -= p;
     return r;
 }
 
-u256 mod_sub(u256 a, u256 b, u256 p) {
-    a %= p; b %= p;
+u256 mod_sub(u256 a, u256 b, u256 p)
+{
+    a %= p;
+    b %= p;
     return (a >= b) ? (a - b) : (p - (b - a));
 }
 
-inline u256 mod_mul(u256 a, u256 b, u256 p) {
+inline u256
+mod_mul(u256 a, u256 b, u256 p)
+{
     return (u256)((u512)a * b % p);
 }
 
-u256 mod_pow(u256 a, u256 e, u256 p) {
+u256 mod_pow(u256 a, u256 e, u256 p)
+{
     u256 r = 1 % p;
     a %= p;
     while (e) {
-        if (e & 1) r = mod_mul(r, a, p);
+        if (e & 1)
+            r = mod_mul(r, a, p);
         a = mod_mul(a, a, p);
         e >>= 1;
     }
     return r;
 }
 
-u256 mod_inv(u256 a, u256 p) {
+u256 mod_inv(u256 a, u256 p)
+{
     /* valid only if p is prime and a != 0 mod p */
     return mod_pow(a, p - 2, p);
 }
 
-Curve Curve_new(int a, const char *b, const char *p, const char *n) {
+Curve Curve_new(int a, const char *b, const char *p, const char *n)
+{
     u256 _p = u256_from_hex(p);
     u256 _a;
     if (a >= 0)
@@ -42,8 +53,8 @@ Curve Curve_new(int a, const char *b, const char *p, const char *n) {
         _a = mod_sub(0, (u256)(a * -1), _p);
 
     Curve c = {
-        .a = _a, 
-        .b = u256_from_hex(b), 
+        .a = _a,
+        .b = u256_from_hex(b),
         .p = _p,
         .n = u256_from_hex(n)
     };
@@ -51,16 +62,19 @@ Curve Curve_new(int a, const char *b, const char *p, const char *n) {
     return c;
 }
 
-Point Point_add(Curve *curve, Point a, Point b) {
-    if (a.identity) return b;
-    if (b.identity) return a;
+Point Point_add(Curve *curve, Point a, Point b)
+{
+    if (a.identity)
+        return b;
+    if (b.identity)
+        return a;
 
     if (a.x == b.x) {
         if (a.y == b.y)
-            return Point_double(curve, a);   // P + P = 2P
+            return Point_double(curve, a); // P + P = 2P
         else {
             Point inf = { .identity = 1 };
-            return inf;                           // P + (-P) = O
+            return inf; // P + (-P) = O
         }
     }
 
@@ -70,8 +84,7 @@ Point Point_add(Curve *curve, Point a, Point b) {
     u256 s = mod_mul(
         mod_sub(b.y, a.y, p),
         mod_inv(mod_sub(b.x, a.x, p), p),
-        p
-    );
+        p);
 
     /* x3 = s^2 - x2 - x1 mod p */
     u256 ss = mod_mul(s, s, p);
@@ -84,7 +97,8 @@ Point Point_add(Curve *curve, Point a, Point b) {
     return point;
 }
 
-Point Point_double(Curve *curve, Point point) {
+Point Point_double(Curve *curve, Point point)
+{
     if (point.identity)
         return point;
 
@@ -94,8 +108,7 @@ Point Point_double(Curve *curve, Point point) {
     u256 s = mod_mul(
         mod_add(mod_mul(3, mod_mul(point.x, point.x, p), p), curve->a, p),
         mod_inv(mod_mul(2, point.y, p), p),
-        p
-    );
+        p);
 
     /* x2 = s^2 - 2x1 mod p */
     u256 x = mod_sub(mod_pow(s, 2, p), mod_mul(2, point.x, p), p);
@@ -104,14 +117,14 @@ Point Point_double(Curve *curve, Point point) {
     u256 y = mod_sub(
         mod_mul(s, mod_sub(point.x, x, p), p),
         point.y,
-        p
-    );
+        p);
 
     Point pnt = { .x = x, .y = y, .identity = 0 };
     return pnt;
 }
 
-Point Point_multiply(Curve *curve, Point point, u256 n) {
+Point Point_multiply(Curve *curve, Point point, u256 n)
+{
     Point P = { .identity = 1 };
     Point G = point;
 
@@ -128,7 +141,8 @@ Point Point_multiply(Curve *curve, Point point, u256 n) {
 
 #define Point_multiply Point_multiply_windowed;
 
-Point Point_multiply_windowed(Curve *curve, Point P, u256 n) {
+Point Point_multiply_windowed(Curve *curve, Point P, u256 n)
+{
     Point inf = { .identity = 1 };
 
     if (n == 0 || P.identity)
@@ -169,7 +183,8 @@ Point Point_multiply_windowed(Curve *curve, Point P, u256 n) {
     return started ? R : inf;
 }
 
-int Point_on_curve(Curve *curve, Point point) {
+int Point_on_curve(Curve *curve, Point point)
+{
     /* rhs = x^3 + ax + b mod p */
     u256 x3 = mod_pow(point.x, 3, curve->p);
     u256 ax = mod_mul(curve->a, point.x, curve->p);
@@ -181,7 +196,8 @@ int Point_on_curve(Curve *curve, Point point) {
     return lhs == rhs;
 }
 
-void Point_print(Point p) {
+void Point_print(Point p)
+{
     printf("{\n\tx: ");
     print_hex_u256(p.x);
     printf("\n\ty: ");

@@ -2,7 +2,7 @@
 #define DUAL_EC_H
 
 #ifdef __INTELLISENSE__
-#define _BitInt(x) int
+    #define _BitInt(x) int
 #endif
 
 #define BYTES_TO_BITINT(bits, arr, len, out) \
@@ -14,18 +14,18 @@
         }                                    \
     } while (0)
 
-typedef signed   _BitInt(256) i256; 
-typedef signed   _BitInt(512) i512;
-typedef unsigned _BitInt(256) u256; 
+typedef signed _BitInt(256) i256;
+typedef signed _BitInt(512) i512;
+typedef unsigned _BitInt(256) u256;
 typedef unsigned _BitInt(512) u512;
 
 u256 u256_from_hex(const char *s);
 void print_hex_u256(u256 x);
 
 typedef struct Curve {
-    u256 p;     /* Field prime */
-    u256 a;     /* a coefficient */
-    u256 b;     /* b coefficient */
+    u256 p; /* Field prime */
+    u256 a; /* a coefficient */
+    u256 b; /* b coefficient */
     u256 n;
 } Curve;
 
@@ -35,7 +35,7 @@ typedef struct Point {
     int identity; /* 1 if this point is O, anything else otherwise*/
 } Point;
 
-Curve Curve_new(int a, const char *b, const char *p, const char* n);
+Curve Curve_new(int a, const char *b, const char *p, const char *n);
 
 u256 mod_mul(u256 a, u256 b, u256 p);
 u256 mod_add(u256 a, u256 b, u256 p);
@@ -61,7 +61,7 @@ typedef enum DECDRBG_RESULT {
     ERROR,
 } DECDRBG_RESULT;
 
-DualECDRBG      DualECDRBG_new(Curve *curve, Point P, Point Q, u256 seed);
-DECDRBG_RESULT  DualECDRBG_next(DualECDRBG *state, u256 *out_bits);
+DualECDRBG     DualECDRBG_new(Curve *curve, Point P, Point Q, u256 seed);
+DECDRBG_RESULT DualECDRBG_next(DualECDRBG *state, u256 *out_bits);
 
 #endif
